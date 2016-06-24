@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -19,6 +20,8 @@ namespace AmbilightServer
         public Form1()
         {
             InitializeComponent();
+            var clientHtml = File.ReadAllText("index.html");
+            var clientCss = File.ReadAllText("dacss.css");
         }
 
         [DllImport("user32.dll")]

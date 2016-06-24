@@ -2,23 +2,30 @@
 <html>
 <head>
   <link rel="stylesheet" href="dacss.css">
-  <meta http-equiv="refresh" content="1">
+  <!-- <meta http-equiv="refresh" content="1"> -->
 </head>
 <body>
+  <script src="NoSleep.js"></script>
     <div id="inner1">
-    <div id="c1" style="background:#1;"></div>
-    <div id="c2" style="background:#4;"></div>
-    <div id="c3" style="background:#7;"></div>
+    <div id="c1" style="background:#1done;"></div>
+    <div id="c2" style="background:#4done;"></div>
+    <div id="c3" style="background:#7done;"></div>
   </div>
     <div id="inner2">
-    <div id="c4" style="background:#2;"></div>
-    <div id="c5" style="background:#5;"></div>
-    <div id="c6" style="background:#8;"></div>
+    <div id="c4" style="background:#2done;"></div>
+    <div id="c5" style="background:#5done;"></div>
+    <div id="c6" style="background:#8done;"></div>
   </div>
     <div id="inner3">
-    <div id="c7" style="background:#3;"></div>
-    <div id="c8" style="background:#6;"></div>
-    <div id="c9" style="background:#9;"></div>
+    <div id="c7" style="background:#3done;"></div>
+    <div id="c8" style="background:#6done;"></div>
+    <div id="c9" style="background:#9done;"></div>
   </div>
+  <script>
+    var noSleep = new NoSleep();
+    var wakeLockEnabled = true;
+    noSleep.enable();
+    setTimeout(function(){window.location.reload(1);}, 250);
+  </script>
 </body>
 </html>

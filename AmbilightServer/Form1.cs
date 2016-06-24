@@ -19,13 +19,15 @@ namespace AmbilightServer
     {
         string clientHtml = "";
         string clientCss = "";
+        string clientJs = "";
         public Form1()
         {
             InitializeComponent();
             clientHtml = File.ReadAllText("index.html");
             clientCss = File.ReadAllText("dacss.css");
+            clientJs = File.ReadAllText("NoSleep.js");
 
-            var ws = new WebServer(SendResponse, "http://localhost:8080/"); // = Works on every server you run it on.
+            var ws = new WebServer(SendResponse, "http://*:8080/"); // = Works on every server you run it on.
             ws.Run();
         }
 
@@ -34,6 +36,10 @@ namespace AmbilightServer
             if (request.RawUrl.ToLower().EndsWith(".css"))
             {
                 return clientCss;
+            }
+            else if (request.RawUrl.ToLower().EndsWith(".js"))
+            {
+                return clientJs;
             }
             else
             {
@@ -62,7 +68,7 @@ namespace AmbilightServer
 
                 for (int i = 0; i < 9; i++)
                 {
-                    clientHtmlnew = clientHtmlnew.Replace("#" + (i + 1), HexConverter(dominantColors[i]));
+                    clientHtmlnew = clientHtmlnew.Replace("#" + (i + 1) + "done", HexConverter(dominantColors[i]));
                 }
 
                 return clientHtmlnew;

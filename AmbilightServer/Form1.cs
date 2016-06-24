@@ -17,11 +17,61 @@ namespace AmbilightServer
 {
     public partial class Form1 : Form
     {
+        string clientHtml = "";
+        string clientCss = "";
         public Form1()
         {
             InitializeComponent();
-            var clientHtml = File.ReadAllText("index.html");
-            var clientCss = File.ReadAllText("dacss.css");
+            clientHtml = File.ReadAllText("index.html");
+            clientCss = File.ReadAllText("dacss.css");
+
+            var ws = new WebServer(SendResponse, "http://localhost:8080/"); // = Works on every server you run it on.
+            ws.Run();
+        }
+
+        public string SendResponse(HttpListenerRequest request)
+        {
+            if (request.RawUrl.ToLower().EndsWith(".css"))
+            {
+                return clientCss;
+            }
+            else
+            {
+                var clientHtmlnew = clientHtml;
+                var screenSize = Screen.PrimaryScreen.Bounds.Size;
+
+                var imgarray = new Image[9];
+                var img = Screenshot();
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < 3; j++)
+                    {
+                        var index = i * 3 + j;
+                        imgarray[index] = new Bitmap(screenSize.Width / 3, screenSize.Height / 3);
+                        var graphics = Graphics.FromImage(imgarray[index]);
+                        graphics.DrawImage(img, new Rectangle(0, 0, screenSize.Width / 3, screenSize.Height / 3), new Rectangle(i * screenSize.Width / 3, j * screenSize.Height / 3, screenSize.Width / 3, screenSize.Height / 3), GraphicsUnit.Pixel);
+                        graphics.Dispose();
+                    }
+                }
+
+                var dominantColors = new List<Color>();
+                foreach (Image screenPart in imgarray)
+                {
+                    dominantColors.Add(getDominantColor((Bitmap)screenPart));
+                }
+
+                for (int i = 0; i < 9; i++)
+                {
+                    clientHtmlnew = clientHtmlnew.Replace("#" + (i + 1), HexConverter(dominantColors[i]));
+                }
+
+                return clientHtmlnew;
+            }
+        }
+
+        private string HexConverter(Color c)
+        {
+            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
 
         [DllImport("user32.dll")]
@@ -99,30 +149,6 @@ namespace AmbilightServer
             pictureBox7.BackColor = dominantColors[6];
             pictureBox8.BackColor = dominantColors[7];
             pictureBox9.BackColor = dominantColors[8];
-
-            //WebClient wc = new WebClient();
-            //wc.DownloadString("192.168.1.38/r.php?c=");
-
-            //var leftTop = new Point(screenSize.Width / 8, screenSize.Height / 6);
-            //pictureBox1.BackColor = GetColorAt(leftTop);
-            //var midTop = new Point(screenSize.Width / 2, screenSize.Height / 6);
-            //pictureBox4.BackColor = GetColorAt(midTop);
-            //var rightTop = new Point(screenSize.Width - screenSize.Width / 8, screenSize.Height / 6);
-            //pictureBox7.BackColor = GetColorAt(rightTop);
-
-            //var leftMid = new Point(screenSize.Width / 8, screenSize.Height / 2);
-            //pictureBox2.BackColor = GetColorAt(leftMid);
-            //var midMid = new Point(screenSize.Width / 2, screenSize.Height / 2);
-            //pictureBox5.BackColor = GetColorAt(midMid);
-            //var rightMid = new Point(screenSize.Width - screenSize.Width / 8, screenSize.Height / 2);
-            //pictureBox8.BackColor = GetColorAt(rightMid);
-
-            //var leftBottom = new Point(screenSize.Width / 8, screenSize.Height -  screenSize.Height / 6);
-            //pictureBox3.BackColor = GetColorAt(leftBottom);
-            //var midBottom = new Point(screenSize.Width / 2, screenSize.Height -  screenSize.Height / 6);
-            //pictureBox6.BackColor = GetColorAt(midBottom);
-            //var rightBottom = new Point(screenSize.Width - screenSize.Width / 8, screenSize.Height - screenSize.Height / 6);
-            //pictureBox9.BackColor = GetColorAt(rightBottom);
         }
 
         public static Color getDominantColor(Bitmap bmp)
@@ -166,45 +192,6 @@ namespace AmbilightServer
             bmp.Dispose();
             GC.Collect();
             return Color.FromArgb(avgR, avgG, avgB);
-
-            //Bitmap bmp2 = new Bitmap(1, 1);
-            //using (Graphics g = Graphics.FromImage(bmp2))
-            //{
-            //    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            //    g.DrawImage(bmp, new Rectangle(0, 0, 1, 1));
-            //    g.Dispose();
-            //}
-            //Color pixel = bmp2.GetPixel(0, 0);
-            //bmp2.Dispose();
-            //return pixel;
-
-            ////Used for tally
-            //int r = 0;
-            //int g = 0;
-            //int b = 0;
-
-            //int total = 0;
-
-            //for (int x = 0; x < bmp.Width; x++)
-            //{
-            //    for (int y = 0; y < bmp.Height; y++)
-            //    {
-            //        Color clr = bmp.GetPixel(x, y);
-
-            //        r += clr.R;
-            //        g += clr.G;
-            //        b += clr.B;
-
-            //        total++;
-            //    }
-            //}
-
-            ////Calculate average
-            //r /= total;
-            //g /= total;
-            //b /= total;
-
-            //return Color.FromArgb(r, g, b);
         }
     }
 }
